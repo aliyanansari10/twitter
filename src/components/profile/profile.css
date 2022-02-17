@@ -1,0 +1,10 @@
+/* img.main-profile.rounded-circle { */
+.profile-pic img.rounded-circle {
+  width: 200px;
+  object-fit: cover;
+  height: 200px;
+  object-position: 25% 22%;
+}
+.profile-content {
+  width: 100%;
+}

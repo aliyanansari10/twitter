@@ -1,0 +1,68 @@
+.custom-button {
+  color: rgb(170, 170, 170);
+  border-radius: 6px;
+  border: 1px solid #32a8f7;
+  transition: ease-in-out 0.5s;
+}
+.custom-button:hover,
+.custom-button:focus,
+.custom-button:active,
+.custom-button.active,
+.open .dropdown-toggle.custom-button {
+  /* background-color: #1d9bf0; */
+  background-color: #61dafb;
+  color: #fff;
+  /* border-color: #4f53c4; */
+
+  border: 2px solid #32a8f7;
+}
+input[type='search'] {
+  background-color: #f7f9f9;
+}
+.trends-for-you {
+  background-color: #f7f9f9;
+  padding: 5px;
+  border-radius: 10px;
+}
+
+.trends-head {
+  display: flex;
+  justify-content: space-between;
+  /* align-items: center; */
+  padding: 4px;
+  border-bottom: 1px solid rgb(202, 202, 202);
+}
+.trend-icon:hover {
+  background-color: #1d9cf03a;
+  border-radius: 50%;
+  height: 25px;
+  width: 20px;
+}
+.trends-head button {
+  background-color: transparent;
+  border: none;
+  border-radius: 15px;
+  padding: 6px;
+}
+.trends-head button:hover {
+  background-color: rgba(128, 128, 128, 0.116);
+}
+
+.trend-card {
+  display: flex;
+  justify-content: space-between;
+  border-radius: 8px;
+  padding: 4px 6px;
+  margin: 4px auto;
+}
+.trend-card:hover {
+  background-color: rgba(128, 128, 128, 0.116);
+  cursor: pointer;
+}
+.trend-content {
+  text-align: left;
+}
+.tweet-count,
+.country {
+  color: rgb(129, 129, 129);
+}

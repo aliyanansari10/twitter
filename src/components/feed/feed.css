@@ -1,0 +1,120 @@
+/* .feed {
+  width: 100%;
+  background-color: tomato;
+  position: relative;
+} */
+.head {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  background-color: #ffffff80;
+  width: 100%;
+  /* position: fixed; */
+}
+.post {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-around;
+  /* position: absolute; */
+  border-bottom: 1px solid rgb(190, 190, 190);
+}
+label {
+  cursor: pointer;
+  /* Style as you please, it will become the visible UI component. */
+}
+.post-image {
+  max-width: 500;
+  max-height: 300;
+}
+#upload-photo {
+  opacity: 0;
+  position: absolute;
+  z-index: -1;
+}
+.post .image-box button {
+  background-color: transparent;
+  border: none;
+}
+.n-icons {
+  padding-right: 4px;
+  font-size: 20px;
+  cursor: pointer;
+}
+.n-icons svg:hover {
+  background-color: #1d9cf03a;
+  border-radius: 50%;
+  /* height: 32px;
+  width: 26px; */
+}
+.post-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.post-box textarea {
+  /* columns: 50; */
+  margin: 5px auto;
+  border: none;
+  border-bottom: 1px solid rgb(190, 190, 190);
+}
+.post-icons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px;
+}
+.post-icons i {
+  color: #1d9bf0;
+  margin: 0 2px;
+}
+.posts {
+  /* display: flex; */
+  margin-top: 10px;
+  padding: 5px;
+  color: rgb(59, 59, 59);
+}
+.posts .row {
+  padding: 10px 0;
+  border: 1px solid rgb(224, 224, 224);
+}
+.posts-head {
+  display: flex;
+}
+.posts-head a {
+  text-decoration: none;
+  color: black;
+}
+.posts-body {
+  display: block;
+}
+.posts-body p {
+  margin-top: 12px;
+  color: rgb(92, 92, 92);
+  text-align: left;
+}
+.posts-body img {
+  cursor: pointer;
+  width: 100%;
+  object-fit: contain;
+}
+.post-like {
+  text-align: left;
+  margin-left: 10px;
+}
+.post-like button {
+  background-color: transparent;
+  border: none;
+  transition: 0.4s;
+}
+.post-like button:hover {
+  background-color: #1d9cf03d;
+  border: none;
+  border-radius: 50%;
+}
+.post-like button:active {
+  background-color: #1d9cf079;
+  border-radius: 50%;
+}
+/* .posts .row {
+  border-bottom: 1px solid rgb(190, 190, 190);
+} */

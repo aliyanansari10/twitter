@@ -1,0 +1,32 @@
+.display-user {
+  display: flex;
+  align-items: center;
+  /* flex-wrap: wrap; */
+  border: 1px solid rgb(226, 226, 226);
+  padding: 30px 15px;
+  width: 100%;
+}
+.display-user img {
+  cursor: pointer;
+}
+.follow {
+  flex-direction: column;
+  display: flex;
+  /* align-items: flex-end; */
+  /* justify-content: flex-end; */
+}
+.follow button {
+  margin: 5px;
+}
+.profileName {
+  padding-left: 10px;
+}
+.profile-data {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.btn-outline-info:hover {
+  color: white !important;
+}

@@ -24,15 +24,10 @@
   color: white;
 }
 
-.App-link {
+h2 {
   color: #61dafb;
+  font-size: 50px;
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.home {
+  display: block;
 }
