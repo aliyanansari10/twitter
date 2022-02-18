@@ -11,7 +11,7 @@ import Login from './components/login/Login';
 // import Trends from './components/trends/Trends';
 import './App.css';
 import Profile from './components/profile/Profile';
-import Profiles from './components/profiles/Profiles';
+import Users from './components/profiles/Users';
 import Home from './components/home/Home';
 // import UploadImage from './components/uploadImage/UploadImage';
 
@@ -20,7 +20,7 @@ function App() {
   // const [userId, setUserId] = useState();
   useEffect(() => {
     const unsub = onAuthStateChanged(getAuth(), (user) => {
-      console.log('on auth state change --------- user --------', user);
+      // console.log('on auth state change --------- user --------', user);
       if (user) {
         // setUserId(user.uid);
         // navigate('/home', { replace: true });
@@ -40,7 +40,7 @@ function App() {
         <Route exact path="/signup" element={<Signup />} />
         <Route exact path="/home" element={<Home />} />
         <Route exact path="/profile" element={<Profile />} />
-        <Route exact path="/profiles" element={<Profiles />} />
+        <Route exact path="/users" element={<Users />} />
       </Routes>
     </div>
     // </Router>

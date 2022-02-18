@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './trends.css';
 import { FiSettings } from 'react-icons/fi';
-// import { Link } from 'react-router-dom';
 
 import { BsThreeDots } from 'react-icons/bs';
 
 function Trends() {
+  const [searchValue, setSearchValue] = useState();
+  const handleSearch = (e) => {
+    setSearchValue(e.target.value);
+  };
+  console.log('Search Value', searchValue);
   return (
     <div className="col-md-3 col-lg-3">
       <div className="trends">
@@ -17,6 +21,7 @@ function Trends() {
                 type="search"
                 placeholder="Search"
                 aria-label="Search"
+                onChange={handleSearch}
               />
               <button className="btn custom-button" type="button">
                 Search

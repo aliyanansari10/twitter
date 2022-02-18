@@ -40,7 +40,7 @@ function Home() {
       .then((snapshot) => {
         if (snapshot.exists()) {
           //   console.log(snapshot.val());
-          console.log('Data Available in rdb', snapshot.val());
+          // console.log('Data Available in rdb', snapshot.val());
           //   userData = snapshot.val();
           setUserData(snapshot.val());
           return 1;
@@ -54,7 +54,11 @@ function Home() {
   }
 
   useEffect(() => {
-    getProfile();
+    if (!userData) {
+      getProfile();
+    } else {
+      return () => 1;
+    }
   }, []);
   return (
     <div className="Home container-fluid">

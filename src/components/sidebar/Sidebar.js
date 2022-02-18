@@ -80,7 +80,7 @@ function Sidebar(props) {
                 <span className="links">Bookmarks</span>
               </li>
             </Link>
-            <Link to="/profiles">
+            <Link to="/users">
               <li>
                 <i className="nav-icons">
                   <RiFileList2Line />
@@ -88,20 +88,20 @@ function Sidebar(props) {
                 <span className="links">Lists</span>
               </li>
             </Link>
-            <Link to="/profiles">
+            <Link to="/users">
               <li>
                 <i className="nav-icons">
                   <FaRegUser />
                 </i>
-                <span className="links">Profiles</span>
+                <span className="links">Users</span>
               </li>
             </Link>
-            <Link to="/home">
+            <Link to="/profile">
               <li>
                 <i className="nav-icons">
                   <HiOutlineDotsCircleHorizontal />
                 </i>
-                <span className="links">More</span>
+                <span className="links">Profile</span>
               </li>
             </Link>
           </ul>

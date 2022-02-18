@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import './feed.css';
-import { onValue, ref, getDatabase, push, set } from 'firebase/database';
+import {
+  onValue,
+  ref,
+  getDatabase,
+  push,
+  // set,
+  update,
+} from 'firebase/database';
 import {
   getStorage,
   ref as newref,
@@ -27,6 +34,8 @@ function Feed(props) {
   const storage = getStorage();
   const [posts, setPosts] = useState();
   const [userProfile, setUserProfile] = useState();
+  // let content = true;
+  // let [content, setcontent] = useState();
   // const [likes, setLikes] = useState();
   // const [postProfile, setPostProfile] = useState();
   let postImage;
@@ -35,7 +44,7 @@ function Feed(props) {
   // ----------- Function to get Data from Database -------
 
   function getData() {
-    console.log('get Data Function');
+    // console.log('get Data Function');
     onValue(ref(db, `users/${loggedInUser}`), (snapshot) => {
       setUserProfile(snapshot.val());
       return 1;
@@ -53,8 +62,8 @@ function Feed(props) {
     if (!userProfile) {
       getData();
     } else {
-      console.log('Return 1 use Effect with user Data: ', userProfile);
-      return 1;
+      // console.log('Return 1 use Effect with user Data: ', userProfile);
+      return () => setPosts({});
     }
   }, []);
 
@@ -181,88 +190,105 @@ function Feed(props) {
               // });
 
               // ---------------------Second Map Method --------------------//
-              return Object.entries(item).map((secondId, secondValue) => {
-                // setLikes(secondId[1].likes);
-                let likes = secondId[1].likes;
-                const handleLikes = () => {
-                  console.log(
-                    'Logic valu in return',
-                    likes.find((value) => value === loggedInUser)
-                  );
-                  if (likes.find((value) => value === loggedInUser)) {
-                    const index = likes.indexOf(loggedInUser);
-                    if (index > -1) {
-                      likes.splice(index, 1);
-                      console.log(
-                        'Like Button Pressed but user already liked the post so unliking it now',
-                        likes
-                      );
-                      set(ref(db, 'posts/' + id[0] + '/' + secondId[0]), {
-                        createdBy: secondId[1].createdBy,
-                        createdOn: secondId[1].createdOn,
-                        description: secondId[1].description,
-                        postImage: secondId[1].postImage,
-                        userProfile: secondId[1].userProfile,
+              // console.log('First map function console log  ', userProfile);
+              if (userProfile?.following.includes(id[0])) {
+                // content = true;
+                return Object.entries(item).map((secondId, secondValue) => {
+                  // setLikes(secondId[1].likes);
+                  let likes = secondId[1].likes;
+                  const handleLikes = () => {
+                    // console.log(
+                    //   'Logic value in return',
+                    //   likes.find((value) => value === loggedInUser)
+                    // );
+                    if (likes.find((value) => value === loggedInUser)) {
+                      const index = likes.indexOf(loggedInUser);
+                      if (index > -1) {
+                        likes.splice(index, 1);
+                        console.log(
+                          'Like Button Pressed but user already liked the post so unliking it now'
+                        );
+                        update(ref(db, 'posts/' + id[0] + '/' + secondId[0]), {
+                          // createdBy: secondId[1].createdBy,
+                          // createdOn: secondId[1].createdOn,
+                          // description: secondId[1].description,
+                          // postImage: secondId[1].postImage,
+                          // userProfile: secondId[1].userProfile,
+                          likes: likes,
+                        });
+                      } else {
+                        console.log('Nothing Happens');
+                      }
+                    } else {
+                      likes.push(loggedInUser);
+                      console.log('New Like to the post');
+                      update(ref(db, 'posts/' + id[0] + '/' + secondId[0]), {
                         likes: likes,
                       });
-                    } else {
-                      console.log('Nothing Happens');
                     }
-                  } else {
-                    likes.push(loggedInUser);
-                    // console.log('New Likes Value', likes);
-                    set(ref(db, 'posts/' + id[0] + '/' + secondId[0]), {
-                      createdBy: secondId[1].createdBy,
-                      createdOn: secondId[1].createdOn,
-                      description: secondId[1].description,
-                      postImage: secondId[1].postImage,
-                      userProfile: secondId[1].userProfile,
-                      likes: likes,
-                    });
-                  }
-                };
-                return (
-                  <div className="row" key={secondId[0]}>
-                    <div className="posts-profile col-md-2">
-                      <Link to="/home">
-                        <img
-                          src={secondId[1].userProfile}
-                          className="rounded-circle"
-                          alt="User Profile"
-                        />
-                      </Link>
-                    </div>
-                    <div className="post-content col-md-10">
-                      <div className="posts-head">
-                        <Link to="/home"> {secondId[1].createdBy} </Link>
-                        <span>. {secondId[1].createdOn}</span>
+                  };
+                  return (
+                    <div className="row" key={secondId[0]}>
+                      <div className="posts-profile col-md-2">
+                        <Link to="/home">
+                          <img
+                            src={secondId[1].userProfile}
+                            className="rounded-circle"
+                            alt="User Profile"
+                          />
+                        </Link>
                       </div>
-                      <hr />
-                      <div className="posts-body">
-                        <p>{secondId[1].description}</p>
-                        <img
-                          src={secondId[1].postImage}
-                          className="rounded post-image"
-                          alt="post"
-                        />
+                      <div className="post-content col-md-10">
+                        <div className="posts-head">
+                          <Link to="/home"> {secondId[1].createdBy} </Link>
+                          <span>. {secondId[1].createdOn}</span>
+                        </div>
+                        <hr />
+                        <div className="posts-body">
+                          <p>{secondId[1].description}</p>
+                          <img
+                            src={secondId[1].postImage}
+                            className="rounded post-image"
+                            alt="post"
+                          />
+                        </div>
+                      </div>
+                      <div className="post-like">
+                        <button onClick={handleLikes}>
+                          <i>
+                            <BiLike />
+                          </i>
+                        </button>
+                        <span className="like-count">
+                          {likes.length - 1 === 0 ? '0' : likes.length - 1}
+                        </span>
                       </div>
                     </div>
-                    <div className="post-like">
-                      <button onClick={handleLikes}>
-                        <i>
-                          <BiLike />
-                        </i>
-                      </button>
-                      <span className="like-count">
-                        {likes.length - 1 === 0 ? '0' : likes.length - 1}
-                      </span>
-                    </div>
-                  </div>
-                  // <div className="users" key={id[0]}>
-                );
-              });
+                    // <div className="users" key={id[0]}>
+                  );
+                });
+              } else {
+                return '';
+                // content = false;
+              }
             })
           }
+          <div
+            className="display-bar my-4"
+            style={
+              userProfile
+                ? userProfile['following'].length > 1
+                  ? { display: 'none' }
+                  : { display: 'block' }
+                : { display: 'none' }
+            }
+          >
+            <>
+              {/* {console.log('Display content value User Profile Following ')} */}
+              <h2>Oops! Nothing to Show Here </h2>
+              <h3>You Need to Follow Users to get Some Posts</h3>
+            </>
+          </div>
         </div>
       </div>
     </div>

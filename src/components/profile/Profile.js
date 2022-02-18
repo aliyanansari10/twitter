@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-// import { useEffect, useState } from 'react/cjs/react.development';
 import Sidebar from './../sidebar/Sidebar';
 import Trends from './../trends/Trends';
 import Modal from 'react-modal';
@@ -10,8 +9,9 @@ import {
   getDownloadURL,
 } from 'firebase/storage';
 import { FaUpload } from 'react-icons/fa';
-
-import { onValue, ref, getDatabase, set } from 'firebase/database';
+import { BiLike } from 'react-icons/bi';
+import { Link } from 'react-router-dom';
+import { onValue, ref, getDatabase, set, update } from 'firebase/database';
 import './profile.css';
 
 function Profile() {
@@ -19,6 +19,8 @@ function Profile() {
   const storage = getStorage();
   const loggedInUser = localStorage.getItem('user');
   const [userProfile, setUserProfile] = useState();
+  const [posts, setPosts] = useState();
+  const [userIdForPosts, setUserIdForPosts] = useState();
   const [showEdit, setShowEdit] = useState();
   const [Image, setImage] = useState();
   const [selectedRow, setSelectedRow] = useState();
@@ -76,32 +78,32 @@ function Profile() {
   function getData() {
     onValue(ref(db, `users/${loggedInUser}`), (snapshot) => {
       setUserProfile(snapshot.val());
+      console.log('Setting user Profile', setUserIdForPosts(snapshot.val()));
       setSelectedRow(snapshot.val());
       return 1;
     });
-    // onValue(ref(db, `users/${loggedInUser}`))
-    //   .then((snapshot) => {
-    //     if (snapshot.exists()) {
-    //       console.log('Data Available in rdb', snapshot.val());
-    //       setUserProfile(snapshot.val());
-    //       return 1;
-    //     } else {
-    //       console.log('No data available');
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //   });
   }
-  // const data = 'sad';
+  function getPosts() {
+    if (userIdForPosts) {
+      onValue(ref(db, `posts/`), (snapshot) => {
+        snapshot.forEach(() => {
+          // const childKey = childSnapshot.key;
+          // const childData = childSnapshot.val();
+          setPosts({ ...snapshot.val() });
+          console.log('Posts: ', snapshot.val());
+        });
+      });
+    }
+  }
+
   // ------------ Use Effect ---------------
+
   useEffect(() => {
     getData();
-    console.log('Use Effect Trigerred -------');
+    getPosts();
     return 1;
   }, []);
-  console.log('Profile Component in Twitter app', userProfile);
-  // getData();
+
   return (
     <div className="profile container-fluid">
       <div className="row">
@@ -151,6 +153,87 @@ function Profile() {
                 Edit Profile
               </button>
             </div>
+          </div>
+          <hr />
+          {/* ------------------------ Posts --------------------- */}
+          <div className="posts">
+            {console.log('User id For Posts', userIdForPosts)}
+            {
+              // ---------------------First Map Method --------------------//
+              Object.entries(posts ? posts : '').map((id, value) => {
+                let item = id[1];
+                // ---------------------Second Map Method --------------------//
+                console.log('Iterations  ');
+                if (id[0] === loggedInUser) {
+                  return Object.entries(item).map((secondId, secondValue) => {
+                    let likes = secondId[1].likes;
+                    const handleLikes = () => {
+                      if (likes.find((value) => value === loggedInUser)) {
+                        const index = likes.indexOf(loggedInUser);
+                        if (index > -1) {
+                          likes.splice(index, 1);
+                          console.log(
+                            'Like Button Pressed but user already liked the post so unliking it now'
+                          );
+                          update(
+                            ref(db, 'posts/' + id[0] + '/' + secondId[0]),
+                            {
+                              likes: likes,
+                            }
+                          );
+                        } else {
+                          console.log('Nothing Happens');
+                        }
+                      } else {
+                        likes.push(loggedInUser);
+                        console.log('New Like to the post');
+                        update(ref(db, 'posts/' + id[0] + '/' + secondId[0]), {
+                          likes: likes,
+                        });
+                      }
+                    };
+                    return (
+                      <div className="row" key={secondId[0]}>
+                        <div className="posts-profile col-md-2">
+                          <Link to="/home">
+                            <img
+                              src={secondId[1].userProfile}
+                              className="rounded-circle"
+                              alt="User Profile"
+                            />
+                          </Link>
+                        </div>
+                        <div className="post-content col-md-10">
+                          <div className="posts-head">
+                            <Link to="/home"> {secondId[1].createdBy} </Link>
+                            <span>. {secondId[1].createdOn}</span>
+                          </div>
+                          <hr />
+                          <div className="posts-body">
+                            <p>{secondId[1].description}</p>
+                            <img
+                              src={secondId[1].postImage}
+                              className="rounded post-image"
+                              alt="post"
+                            />
+                          </div>
+                        </div>
+                        <div className="post-like">
+                          <button onClick={handleLikes}>
+                            <i>
+                              <BiLike />
+                            </i>
+                          </button>
+                          <span className="like-count">
+                            {likes.length - 1 === 0 ? '0' : likes.length - 1}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  });
+                }
+              })
+            }
           </div>
         </div>
         <Trends />
