@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaEnvelope } from 'react-icons/fa';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import Alert from './../alert/Alert';
 import SideImage from './../../images/signup.jpg';
 // import // getDatabase,
 // ref,
@@ -12,11 +13,26 @@ import SideImage from './../../images/signup.jpg';
 // onValue,
 // 'firebase/database';
 import './login.css';
+// import { useState } from 'react';
 
 function Login() {
   let navigate = useNavigate();
   const auth = getAuth();
+  const [alert, setAlert] = useState(null);
   // const db = getDatabase();
+
+  // ------------ Display Alert -----------
+  // ----------------- setting alert ------------
+  const showAlert = (message, type) => {
+    setAlert({
+      message: message,
+      type: type,
+    });
+    setTimeout(() => {
+      setAlert(null);
+    }, 3000);
+  };
+
   const onSubmitHandler = (event) => {
     event.preventDefault();
 
@@ -49,20 +65,23 @@ function Login() {
           });
         document.getElementById('login-form').reset();
       } else {
-        <div class="alert alert-warning" role="alert">
-          Please Enter Password in Correct Format
-        </div>;
+        showAlert('Please Enter Password in Correct Format', 'warning');
+        // <div class="alert alert-warning" role="alert">
+        //   Please Enter Password in Correct Format
+        // </div>;
       }
       // console.log(regexpass.test(testpass));
     } else {
-      <div class="alert alert-warning" role="alert">
-        Please Enter Correct Email Address
-      </div>;
+      showAlert('Please Enter Correct Email Address', 'warning');
+      // <div class="alert alert-warning" role="alert">
+      //   Please Enter Correct Email Address
+      // </div>;
     }
   };
   return (
     <section className="login">
       <div className="container ">
+        <Alert alert={alert} />
         <div className="login-content row">
           <div className="col-md-6 my-5">
             <h2>twitter</h2>

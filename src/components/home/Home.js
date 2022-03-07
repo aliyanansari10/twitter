@@ -19,6 +19,7 @@ function Home() {
   //   let userData = {};
   const loggedInUser = localStorage.getItem('user');
   const db = getDatabase();
+  // console.log('---- Search Value: at parent ----- ', searchValue);
   // useEffect(() => {
 
   //     // ------------ Every Time on OnChange ---------- //
@@ -57,17 +58,13 @@ function Home() {
     if (!userData) {
       getProfile();
     } else {
-      return () => 1;
+      return () => setUserData({});
     }
   }, []);
   return (
     <div className="Home container-fluid">
       <div className="row">
-        <Sidebar
-          fullName={userData?.fullname}
-          userName={userData?.username}
-          userImage={userData?.imageUrl}
-        />
+        <Sidebar />
         <Feed userImage={userData?.imageUrl} />
         <Trends />
       </div>

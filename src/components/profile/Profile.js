@@ -10,8 +10,14 @@ import {
 } from 'firebase/storage';
 import { FaUpload } from 'react-icons/fa';
 import { BiLike } from 'react-icons/bi';
-import { Link } from 'react-router-dom';
-import { onValue, ref, getDatabase, set, update } from 'firebase/database';
+import { Link, useParams } from 'react-router-dom';
+import {
+  onValue,
+  ref,
+  getDatabase,
+  // set,
+  update,
+} from 'firebase/database';
 import './profile.css';
 
 function Profile() {
@@ -20,11 +26,15 @@ function Profile() {
   const loggedInUser = localStorage.getItem('user');
   const [userProfile, setUserProfile] = useState();
   const [posts, setPosts] = useState();
-  const [userIdForPosts, setUserIdForPosts] = useState();
+  // const [userIdForPosts, setUserIdForPosts] = useState();
   const [showEdit, setShowEdit] = useState();
   const [Image, setImage] = useState();
   const [selectedRow, setSelectedRow] = useState();
-
+  const { userid } = useParams();
+  // const [profileId, setprofileId] = useState();
+  // setprofileId(userid.split(':'));
+  const profileId = userid.split(':');
+  // console.log('Profile Id is', profileId);
   // ---------- Handle Onchange EVent for Image Upload -----------
 
   const handleImage = (e) => {
@@ -63,7 +73,7 @@ function Profile() {
     const storageRef = newref(storage, 'posts/' + loggedInUser + '.jpg');
     uploadBytes(storageRef, Image).then((snapshot) => {
       getDownloadURL(storageRef).then((downloadURL) => {
-        set(ref(db, `users/${loggedInUser}/`), {
+        update(ref(db, `users/${loggedInUser}/`), {
           username: selectedRow.username,
           fullname: selectedRow.fullname,
           contact: selectedRow.contact,
@@ -76,24 +86,22 @@ function Profile() {
 
   // ----------- Function to get Data from Database -------
   function getData() {
-    onValue(ref(db, `users/${loggedInUser}`), (snapshot) => {
+    onValue(ref(db, `users/${profileId[1]}`), (snapshot) => {
       setUserProfile(snapshot.val());
-      console.log('Setting user Profile', setUserIdForPosts(snapshot.val()));
+      // console.log('Setting user Profile', setUserIdForPosts(snapshot.val()));
       setSelectedRow(snapshot.val());
       return 1;
     });
   }
   function getPosts() {
-    if (userIdForPosts) {
-      onValue(ref(db, `posts/`), (snapshot) => {
-        snapshot.forEach(() => {
-          // const childKey = childSnapshot.key;
-          // const childData = childSnapshot.val();
-          setPosts({ ...snapshot.val() });
-          console.log('Posts: ', snapshot.val());
-        });
+    onValue(ref(db, `posts/${profileId[1]}`), (snapshot) => {
+      snapshot.forEach(() => {
+        // const childKey = childSnapshot.key;
+        // const childData = childSnapshot.val();
+        setPosts({ ...snapshot.val() });
+        // console.log('Posts: ', snapshot.val());
       });
-    }
+    });
   }
 
   // ------------ Use Effect ---------------
@@ -107,11 +115,7 @@ function Profile() {
   return (
     <div className="profile container-fluid">
       <div className="row">
-        <Sidebar
-          fullName={userProfile?.fullname}
-          userName={userProfile?.username}
-          userImage={userProfile?.imageUrl}
-        />
+        <Sidebar />
         <div className="col-md-6 col-sm-9 col-9">
           <div className="profile my-5">
             <div className="profile-pic">
@@ -145,7 +149,14 @@ function Profile() {
                 </span>
               </h4>
             </div>
-            <div className="edit-profile">
+            <div
+              className="edit-profile"
+              style={
+                profileId[1] === loggedInUser
+                  ? { display: 'block' }
+                  : { display: 'none' }
+              }
+            >
               <button
                 className="btn custom-button"
                 onClick={() => setShowEdit(true)}
@@ -157,81 +168,72 @@ function Profile() {
           <hr />
           {/* ------------------------ Posts --------------------- */}
           <div className="posts">
-            {console.log('User id For Posts', userIdForPosts)}
+            {/* {console.log('User id For Posts', userIdForPosts)} */}
             {
               // ---------------------First Map Method --------------------//
+
               Object.entries(posts ? posts : '').map((id, value) => {
-                let item = id[1];
-                // ---------------------Second Map Method --------------------//
-                console.log('Iterations  ');
-                if (id[0] === loggedInUser) {
-                  return Object.entries(item).map((secondId, secondValue) => {
-                    let likes = secondId[1].likes;
-                    const handleLikes = () => {
-                      if (likes.find((value) => value === loggedInUser)) {
-                        const index = likes.indexOf(loggedInUser);
-                        if (index > -1) {
-                          likes.splice(index, 1);
-                          console.log(
-                            'Like Button Pressed but user already liked the post so unliking it now'
-                          );
-                          update(
-                            ref(db, 'posts/' + id[0] + '/' + secondId[0]),
-                            {
-                              likes: likes,
-                            }
-                          );
-                        } else {
-                          console.log('Nothing Happens');
-                        }
-                      } else {
-                        likes.push(loggedInUser);
-                        console.log('New Like to the post');
-                        update(ref(db, 'posts/' + id[0] + '/' + secondId[0]), {
-                          likes: likes,
-                        });
-                      }
-                    };
-                    return (
-                      <div className="row" key={secondId[0]}>
-                        <div className="posts-profile col-md-2">
-                          <Link to="/home">
-                            <img
-                              src={secondId[1].userProfile}
-                              className="rounded-circle"
-                              alt="User Profile"
-                            />
-                          </Link>
-                        </div>
-                        <div className="post-content col-md-10">
-                          <div className="posts-head">
-                            <Link to="/home"> {secondId[1].createdBy} </Link>
-                            <span>. {secondId[1].createdOn}</span>
-                          </div>
-                          <hr />
-                          <div className="posts-body">
-                            <p>{secondId[1].description}</p>
-                            <img
-                              src={secondId[1].postImage}
-                              className="rounded post-image"
-                              alt="post"
-                            />
-                          </div>
-                        </div>
-                        <div className="post-like">
-                          <button onClick={handleLikes}>
-                            <i>
-                              <BiLike />
-                            </i>
-                          </button>
-                          <span className="like-count">
-                            {likes.length - 1 === 0 ? '0' : likes.length - 1}
-                          </span>
-                        </div>
+                let likes = id[1].likes;
+                const handleLikes = () => {
+                  if (likes.find((value) => value === loggedInUser)) {
+                    const index = likes.indexOf(loggedInUser);
+                    if (index > -1) {
+                      likes.splice(index, 1);
+                      // console.log(
+                      //   'Like Button Pressed but user already liked the post so unliking it now'
+                      // );
+                      update(ref(db, 'posts/' + profileId[1] + '/' + id[0]), {
+                        likes: likes,
+                      });
+                    } else {
+                      // Nothing Goes Here ...
+                    }
+                  } else {
+                    likes.push(loggedInUser);
+                    // console.log('New Like to the post');
+                    update(ref(db, 'posts/' + profileId[1] + '/' + id[0]), {
+                      likes: likes,
+                    });
+                  }
+                };
+                return (
+                  <div className="row" key={id[0]}>
+                    <div className="posts-profile col-md-2">
+                      <Link to="/home">
+                        <img
+                          src={id[1].userProfile}
+                          className="rounded-circle"
+                          alt="User Profile"
+                        />
+                      </Link>
+                    </div>
+                    <div className="post-content col-md-10">
+                      <div className="posts-head">
+                        <Link to="/home"> {id[1].createdBy} </Link>
+                        <span>. {id[1].createdOn}</span>
                       </div>
-                    );
-                  });
-                }
+                      <hr />
+                      <div className="posts-body">
+                        <p>{id[1].description}</p>
+                        <img
+                          src={id[1].postImage}
+                          className="rounded post-image"
+                          alt="post"
+                        />
+                      </div>
+                    </div>
+                    <div className="post-like">
+                      <button onClick={handleLikes}>
+                        <i>
+                          <BiLike />
+                        </i>
+                      </button>
+                      <span className="like-count">
+                        {likes.length - 1 === 0 ? '0' : likes.length - 1}
+                      </span>
+                    </div>
+                  </div>
+                );
               })
             }
           </div>
@@ -264,11 +266,7 @@ function Profile() {
           },
         }}
       >
-        <form
-          className="row g-2"
-          id="edit-task"
-          // onSubmit={onEditHandler}
-        >
+        <form className="row g-2" id="edit-task" onSubmit={onEditHandler}>
           <div className="col-md-12">
             <label htmlFor="user-name" className="form-label">
               UserName:
@@ -329,7 +327,7 @@ function Profile() {
           <div className="col-md-12 my-4">
             <button
               // type="submit"
-              onClick={onEditHandler}
+              // onClick={onEditHandler}
               className="col-3 btn btn-secondary mx-1 "
             >
               Edit Profile

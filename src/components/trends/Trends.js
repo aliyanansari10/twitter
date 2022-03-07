@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './trends.css';
 import { FiSettings } from 'react-icons/fi';
 
 import { BsThreeDots } from 'react-icons/bs';
 
-function Trends() {
-  const [searchValue, setSearchValue] = useState();
+function Trends(props) {
   const handleSearch = (e) => {
-    setSearchValue(e.target.value);
+    // setSearchValue(e.target.value);
+    props.getSearchValue(e.target.value);
   };
-  console.log('Search Value', searchValue);
   return (
     <div className="col-md-3 col-lg-3">
       <div className="trends">

@@ -30,3 +30,7 @@
 .btn-outline-info:hover {
   color: white !important;
 }
+a {
+  text-decoration: none;
+  color: rgb(86, 182, 185);
+}

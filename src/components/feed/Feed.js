@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Alert from './../alert/Alert';
 import './feed.css';
 import {
   onValue,
@@ -34,12 +35,24 @@ function Feed(props) {
   const storage = getStorage();
   const [posts, setPosts] = useState();
   const [userProfile, setUserProfile] = useState();
+  const [alert, setAlert] = useState(null);
   // let content = true;
   // let [content, setcontent] = useState();
   // const [likes, setLikes] = useState();
   // const [postProfile, setPostProfile] = useState();
+
   let postImage;
 
+  // ----------------- setting alert ------------
+  const showAlert = (message, type) => {
+    setAlert({
+      message: message,
+      type: type,
+    });
+    setTimeout(() => {
+      setAlert(null);
+    }, 3000);
+  };
   // ----------- Function To Get user Data from firebase ------------
   // ----------- Function to get Data from Database -------
 
@@ -71,7 +84,7 @@ function Feed(props) {
 
   const handlePostImage = (e) => {
     postImage = e.target.files[0];
-    console.log('Image Data', postImage);
+    // console.log('Image Data', postImage);
   };
 
   // ----------------------------------- Post Tweet --------------------------------------
@@ -96,202 +109,192 @@ function Feed(props) {
         });
         document.getElementById('post-tweet').reset();
         console.log('Post Uploaded');
+        showAlert('Post has been Uploaded!', 'success');
       });
     });
   };
 
   return (
-    <div className="col-md-6 col-sm-9 col-9">
-      <div className="feed">
-        {/* ----------------------- Post Tweet ------------------------- */}
-        <div className="head">
-          <h4>Home</h4>
-          <i>
-            <BsStars />
-          </i>
-        </div>
-        <div className="post">
-          <div className="image-box">
-            <Link to="/profile">
-              <img
-                src={props.userImage}
-                alt="Profile"
-                className="rounded-circle"
-              ></img>
-            </Link>
+    <>
+      <div className="col-md-6 col-sm-9 col-9">
+        <Alert alert={alert} />
+        <div className="feed">
+          {/* ----------------------- Post Tweet ------------------------- */}
+          <div className="head">
+            <h4>Home</h4>
+            <i>
+              <BsStars />
+            </i>
           </div>
-          <form id="post-tweet">
-            <div className="post-box row">
-              <textarea
-                rows="3"
-                cols="12"
-                placeholder="What's Happening?"
-                id="post-description"
-                required
-              ></textarea>
-              <div className="post-icons">
-                <div className="n-icons">
-                  <label htmlFor="upload-photo">
+          <div className="post">
+            <div className="image-box">
+              <Link to={`/profile:${loggedInUser}`}>
+                <img
+                  src={props.userImage}
+                  alt="Profile"
+                  className="rounded-circle"
+                ></img>
+              </Link>
+            </div>
+            <form id="post-tweet">
+              <div className="post-box row">
+                <textarea
+                  rows="3"
+                  cols="12"
+                  placeholder="What's Happening?"
+                  id="post-description"
+                  required
+                ></textarea>
+                <div className="post-icons">
+                  <div className="n-icons">
+                    <label htmlFor="upload-photo">
+                      <i className="n-icons">
+                        <BsImage />
+                      </i>
+                    </label>
+                    <input
+                      type="file"
+                      name="photo"
+                      onChange={handlePostImage}
+                      id="upload-photo"
+                    />
                     <i className="n-icons">
-                      <BsImage />
+                      <MdOutlineGif />
                     </i>
-                  </label>
-                  <input
-                    type="file"
-                    name="photo"
-                    onChange={handlePostImage}
-                    id="upload-photo"
-                  />
-                  <i className="n-icons">
-                    <MdOutlineGif />
-                  </i>
-                  <i className="n-icons">
-                    <BsBarChartLine />
-                  </i>
-                  <i className="n-icons">
-                    <BsEmojiSmile />
-                  </i>
-                  <i className="n-icons">
-                    <AiOutlineSchedule />
-                  </i>
+                    <i className="n-icons">
+                      <BsBarChartLine />
+                    </i>
+                    <i className="n-icons">
+                      <BsEmojiSmile />
+                    </i>
+                    <i className="n-icons">
+                      <AiOutlineSchedule />
+                    </i>
 
-                  <i className="n-icons">
-                    <GoLocation />
-                  </i>
-                </div>
-                <div className="post-btn">
-                  <button
-                    className="btn custom-button rounded-pill px-4"
-                    onClick={postTweet}
-                  >
-                    Tweet
-                  </button>
+                    <i className="n-icons">
+                      <GoLocation />
+                    </i>
+                  </div>
+                  <div className="post-btn">
+                    <button
+                      className="btn custom-button rounded-pill px-4"
+                      onClick={postTweet}
+                    >
+                      Tweet
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </form>
-        </div>
+            </form>
+          </div>
 
-        {/* ------------------ Posts news feed -------------------- */}
+          {/* ------------------ Posts news feed -------------------- */}
 
-        <div className="posts">
-          {
-            // ---------------------First Map Method --------------------//
-            Object.entries(posts ? posts : '').map((id, value) => {
-              let item = id[1];
+          <div className="posts">
+            {
+              // ---------------------First Map Method --------------------//
+              Object.entries(posts ? posts : '').map((id, value) => {
+                let item = id[1];
 
-              // let profile;
-              // console.log('console from getting, ', id[0]);
-              // Getting user data for profile Updated //
-              // get(ref(db, `users/${id[0]}`)).then((snapshot) => {
-              //   console.log(snapshot);
-              //   // setPostProfile(snapshot.val());
-              //   // console.log('Snapshot value is: ..... new -----', profile);
-              // });
+                // ---------------------Second Map Method --------------------//
 
-              // ---------------------Second Map Method --------------------//
-              // console.log('First map function console log  ', userProfile);
-              if (userProfile?.following.includes(id[0])) {
-                // content = true;
-                return Object.entries(item).map((secondId, secondValue) => {
-                  // setLikes(secondId[1].likes);
-                  let likes = secondId[1].likes;
-                  const handleLikes = () => {
-                    // console.log(
-                    //   'Logic value in return',
-                    //   likes.find((value) => value === loggedInUser)
-                    // );
-                    if (likes.find((value) => value === loggedInUser)) {
-                      const index = likes.indexOf(loggedInUser);
-                      if (index > -1) {
-                        likes.splice(index, 1);
-                        console.log(
-                          'Like Button Pressed but user already liked the post so unliking it now'
-                        );
+                if (userProfile?.following.includes(id[0])) {
+                  return Object.entries(item).map((secondId, secondValue) => {
+                    let likes = secondId[1].likes;
+                    const handleLikes = () => {
+                      if (likes.find((value) => value === loggedInUser)) {
+                        const index = likes.indexOf(loggedInUser);
+                        if (index > -1) {
+                          likes.splice(index, 1);
+                          // console.log(
+                          //   'Like Button Pressed but user already liked the post so unliking it now'
+                          // );
+                          update(
+                            ref(db, 'posts/' + id[0] + '/' + secondId[0]),
+                            {
+                              likes: likes,
+                            }
+                          );
+                        } else {
+                          // nothing goes here
+                        }
+                      } else {
+                        likes.push(loggedInUser);
+                        // console.log('New Like to the post');
                         update(ref(db, 'posts/' + id[0] + '/' + secondId[0]), {
-                          // createdBy: secondId[1].createdBy,
-                          // createdOn: secondId[1].createdOn,
-                          // description: secondId[1].description,
-                          // postImage: secondId[1].postImage,
-                          // userProfile: secondId[1].userProfile,
                           likes: likes,
                         });
-                      } else {
-                        console.log('Nothing Happens');
                       }
-                    } else {
-                      likes.push(loggedInUser);
-                      console.log('New Like to the post');
-                      update(ref(db, 'posts/' + id[0] + '/' + secondId[0]), {
-                        likes: likes,
-                      });
-                    }
-                  };
-                  return (
-                    <div className="row" key={secondId[0]}>
-                      <div className="posts-profile col-md-2">
-                        <Link to="/home">
-                          <img
-                            src={secondId[1].userProfile}
-                            className="rounded-circle"
-                            alt="User Profile"
-                          />
-                        </Link>
-                      </div>
-                      <div className="post-content col-md-10">
-                        <div className="posts-head">
-                          <Link to="/home"> {secondId[1].createdBy} </Link>
-                          <span>. {secondId[1].createdOn}</span>
+                    };
+                    return (
+                      <div className="row" key={secondId[0]}>
+                        <div className="posts-profile col-md-2">
+                          <Link to={`/profile:${id[0]}`}>
+                            <img
+                              src={secondId[1].userProfile}
+                              className="rounded-circle"
+                              alt="User Profile"
+                            />
+                          </Link>
                         </div>
-                        <hr />
-                        <div className="posts-body">
-                          <p>{secondId[1].description}</p>
-                          <img
-                            src={secondId[1].postImage}
-                            className="rounded post-image"
-                            alt="post"
-                          />
+                        <div className="post-content col-md-10">
+                          <div className="posts-head">
+                            <Link to={`/profile:${id[0]}"`}>
+                              {' '}
+                              {secondId[1].createdBy}{' '}
+                            </Link>
+                            <span>. {secondId[1].createdOn}</span>
+                          </div>
+                          <hr />
+                          <div className="posts-body">
+                            <p>{secondId[1].description}</p>
+                            <img
+                              src={secondId[1].postImage}
+                              className="rounded post-image"
+                              alt="post"
+                            />
+                          </div>
+                        </div>
+                        <div className="post-like">
+                          <button onClick={handleLikes}>
+                            <i>
+                              <BiLike />
+                            </i>
+                          </button>
+                          <span className="like-count">
+                            {likes.length - 1 === 0 ? '0' : likes.length - 1}
+                          </span>
                         </div>
                       </div>
-                      <div className="post-like">
-                        <button onClick={handleLikes}>
-                          <i>
-                            <BiLike />
-                          </i>
-                        </button>
-                        <span className="like-count">
-                          {likes.length - 1 === 0 ? '0' : likes.length - 1}
-                        </span>
-                      </div>
-                    </div>
-                    // <div className="users" key={id[0]}>
-                  );
-                });
-              } else {
-                return '';
-                // content = false;
-              }
-            })
-          }
-          <div
-            className="display-bar my-4"
-            style={
-              userProfile
-                ? userProfile['following'].length > 1
-                  ? { display: 'none' }
-                  : { display: 'block' }
-                : { display: 'none' }
+                      // <div className="users" key={id[0]}>
+                    );
+                  });
+                } else {
+                  return '';
+                  // content = false;
+                }
+              })
             }
-          >
-            <>
-              {/* {console.log('Display content value User Profile Following ')} */}
-              <h2>Oops! Nothing to Show Here </h2>
-              <h3>You Need to Follow Users to get Some Posts</h3>
-            </>
+            <div
+              className="display-bar my-4"
+              style={
+                userProfile
+                  ? userProfile['following'].length > 1
+                    ? { display: 'none' }
+                    : { display: 'block' }
+                  : { display: 'none' }
+              }
+            >
+              <>
+                {/* {console.log('Display content value User Profile Following ')} */}
+                <h2>Oops! Nothing to Show Here </h2>
+                <h3>You Need to Follow Users to get Some Posts</h3>
+              </>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
 // import { useNavigate } from 'react-router-dom';
@@ -19,9 +19,42 @@ import {
 import { HiOutlineDotsCircleHorizontal } from 'react-icons/hi';
 import { RiFileList2Line } from 'react-icons/ri';
 import './sidebar.css';
+import {
+  getDatabase,
+  ref,
+  //  onValue,
+  // get,
+  onValue,
+} from 'firebase/database';
+const loggedInUser = localStorage.getItem('user');
 
 function Sidebar(props) {
+  const db = getDatabase();
+  const [userSidebar, setuserSidebar] = useState();
   const auth = getAuth();
+  const getData = () => {
+    // get(ref(db, `users/${loggedInUser}}`), (snapshot) => {
+    //   setuserSidebar(snapshot.val());
+
+    //   console.log('Snap Shot Value: ', snapshot.val());
+    //   return 1;
+    // });
+    onValue(ref(db, `users/${loggedInUser}`), (snapshot) => {
+      if (snapshot.exists()) {
+        // console.log(snapshot.val());
+        setuserSidebar(snapshot.val());
+      } else {
+        console.log('No data available');
+      }
+    });
+  };
+  // console.log('---------- user ---------- : ', userSidebar);
+  useEffect(() => {
+    if (!userSidebar) {
+      getData();
+    } else {
+    }
+  }, []);
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
@@ -96,7 +129,7 @@ function Sidebar(props) {
                 <span className="links">Users</span>
               </li>
             </Link>
-            <Link to="/profile">
+            <Link to={`/profile:${loggedInUser}`}>
               <li>
                 <i className="nav-icons">
                   <HiOutlineDotsCircleHorizontal />
@@ -114,17 +147,22 @@ function Sidebar(props) {
         </div>
         <div className="user my-5">
           <div>
-            <Link to="/profile">
+            <Link to={`/profile:${loggedInUser}`}>
               <img
-                src={props.userImage}
+                src={userSidebar?.imageUrl}
+                // src="as"
                 alt="Profile"
                 className="rounded-circle"
               />
             </Link>
             <div className="profile-name mx-1">
-              <span className="full-name">{props.fullName}</span>
+              <span className="full-name">
+                {userSidebar?.fullname}
+                {/* abc */}
+              </span>
               <span className="user-name">
-                @{props.userName?.toLowerCase()}
+                @{userSidebar?.username.toLowerCase()}
+                {/* abc */}
               </span>
             </div>
           </div>

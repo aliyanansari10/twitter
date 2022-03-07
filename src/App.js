@@ -20,16 +20,15 @@ function App() {
   // const [userId, setUserId] = useState();
   useEffect(() => {
     const unsub = onAuthStateChanged(getAuth(), (user) => {
-      // console.log('on auth state change --------- user --------', user);
       if (user) {
         // setUserId(user.uid);
         // navigate('/home', { replace: true });
-        console.log('Welcome User');
+        // console.log('Welcome User');
       } else {
         navigate('/', { replace: true });
       }
     });
-    return unsub;
+    return () => 1;
   }, [onAuthStateChanged]);
 
   return (
@@ -39,7 +38,7 @@ function App() {
         <Route exact path="/" element={<Login />} />
         <Route exact path="/signup" element={<Signup />} />
         <Route exact path="/home" element={<Home />} />
-        <Route exact path="/profile" element={<Profile />} />
+        <Route exact path="/profile:userid" element={<Profile />} />
         <Route exact path="/users" element={<Users />} />
       </Routes>
     </div>
